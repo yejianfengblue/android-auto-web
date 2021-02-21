@@ -19,6 +19,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     "indent": "off",
     "@typescript-eslint/indent": ["error", 2],
+    'object-curly-spacing': ['error', 'always', { 'objectsInObjects': true}],
     "vue/max-len": ["warn", { code: 120, comments: 120, template: 120 }],
     "vue/max-attributes-per-line": ["error", {
       "singleline": 10,
