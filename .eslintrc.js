@@ -28,6 +28,11 @@ module.exports = {
         "allowFirstLine": true
       }
     }],
+    "vue/singleline-html-element-content-newline": ["error", {
+      "ignoreWhenNoAttributes": true,
+      "ignoreWhenEmpty": true,
+      "ignores": ["v-icon"]
+    }]
   },
   overrides: [
     {
