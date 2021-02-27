@@ -18,6 +18,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
+import { DuelLinksAccount } from '@/types/duellinks/DuelLinkAccount'
 
 const baseUri = "http://localhost:24000/duelLinksAccounts";
 
@@ -62,22 +63,22 @@ export default class DuelLinksAccounts extends Vue {
 
 }
 
-class DuelLinksAccount {
-  constructor(
-    readonly id: string,
-    readonly playerId: string,
-    private device: string, private emulatorIndex: number, private appIndex: number,
-    private gem: number, private giftExpireDate: Date,
-    private stage: number, private stageUpTime: Date,
-    private currentChar: Character, private chars: Array<Character>,
-    private deck: string, private cards: Array<Card>, private pkg: string) {}
-}
+// class DuelLinksAccount {
+//   constructor(
+//     readonly id: string,
+//     readonly playerId: string,
+//     private device: string, private emulatorIndex: number, private appIndex: number,
+//     private gem: number, private giftExpireDate: Date,
+//     private stage: number, private stageUpTime: Date,
+//     private currentChar: Character, private chars: Array<Character>,
+//     private deck: string, private cards: Array<Card>, private pkg: string) {}
+// }
 
-class Character {
-  constructor(readonly name: string, private level: number) {}
-}
+// class Character {
+//   constructor(readonly name: string, private level: number) {}
+// }
 
-class Card {
-  constructor(readonly name: string, private amount: number) {}
-}
+// class Card {
+//   constructor(readonly name: string, private amount: number) {}
+// }
 </script>
