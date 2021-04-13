@@ -1,7 +1,7 @@
 import { Card } from "./Card";
 import { Character } from "./Character";
 
-export class DuelLinksAccount {
+export default class DuelLinksAccount {
 
   constructor(
     readonly id: string,

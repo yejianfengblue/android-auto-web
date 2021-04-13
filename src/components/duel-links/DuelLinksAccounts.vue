@@ -1,11 +1,19 @@
 <template>
-  <v-data-table :headers="headers" :items="accounts" item-key="id">
+  <v-data-table :headers="headers" :items="accounts" item-key="id"
+                :server-items-length="page.totalElements"
+                :options.sync="options"
+                :footer-props="{ showFirstLastPage: true,
+                                 showCurrentPage: true,
+                                 itemsPerPageOptions: [10, 20, 30] }"
+                :multi-sort="true"
+                :loading="loading"
+  >
     <template #item.index="{ item }">
       {{ item.emulatorIndex ? item.emulatorIndex : item.appIndex }}
     </template>
 
     <template #item.currentChar="{ item }">
-      {{ item.currentChar.name + ' ' + item.currentChar.level }}
+      {{ item.currentChar ? item.currentChar.name + ' ' + item.currentChar.level : '' }}
     </template>
 
     <template #item.actions="{ item }">
@@ -16,9 +24,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import { DataOptions } from 'vuetify/types'
 import axios from "axios";
-import { DuelLinksAccount } from '@/types/duellinks/DuelLinkAccount'
+import DuelLinksAccount from '@/types/duellinks/DuelLinkAccount'
+import Page from '@/types/Page'
 
 const baseUri = "http://localhost:24000/duelLinksAccounts";
 
@@ -42,18 +52,55 @@ export default class DuelLinksAccounts extends Vue {
 
   private accounts: Array<DuelLinksAccount> = [];
 
+  private options: DataOptions = {
+    page: 1,
+    itemsPerPage: 10,
+    sortBy: ['device', 'index'],
+    sortDesc: [],
+    groupBy: [],
+    groupDesc: [],
+    multiSort: true,
+    mustSort: false
+  };
 
-  mounted() {
+  private page: Page = new Page(0, 0, 0, 0);
+
+  private loading = true;
+
+  created() {
+    this.getAll();
+  }
+
+  @Watch('options', { deep: true })
+  refresh() {
     this.getAll();
   }
 
   getAll() {
-    axios.get(baseUri)
+    this.loading = true;
+    const uri = new URL(baseUri);
+    uri.searchParams.append('size', String(this.options.itemsPerPage));
+    uri.searchParams.append('page', String(this.options.page - 1));
+    const sortBy = this.options.sortBy;
+    const sortDesc = this.options.sortDesc;
+    for (let sortIdx = 0; sortIdx < sortBy.length; sortIdx++) {
+      if (sortBy[sortIdx] === 'index') {
+        uri.searchParams.append('sort', `appIndex,${sortDesc[sortIdx] ? 'desc' : 'asc'}`)
+        uri.searchParams.append('sort', `emulatorIndex,${sortDesc[sortIdx] ? 'desc' : 'asc'}`)
+      } else {
+        uri.searchParams.append('sort', `${sortBy[sortIdx]},${sortDesc[sortIdx] ? 'desc' : 'asc'}`)
+      }
+    }
+    console.log(uri.href)
+    // http://localhost:24000/duelLinksAccounts?sort=device,desc&sort=gem,asc&sort=appIndex,desc
+    // const uri = `${baseUri}?size=${size}&page=${pageNumber}`;
+    axios.get(uri.href)
       .then((response) => {
         if (response.status === 200) {
+          this.loading = false;
           this.accounts = response.data._embedded ? response.data._embedded.duelLinksAccounts : [];
+          this.page = response.data.page ? response.data.page : new Page(0, 0, 0, 0);
         }
-        console.log('duelLinksAccounts length = ', this.accounts.length);
       })
   }
 
@@ -63,22 +110,4 @@ export default class DuelLinksAccounts extends Vue {
 
 }
 
-// class DuelLinksAccount {
-//   constructor(
-//     readonly id: string,
-//     readonly playerId: string,
-//     private device: string, private emulatorIndex: number, private appIndex: number,
-//     private gem: number, private giftExpireDate: Date,
-//     private stage: number, private stageUpTime: Date,
-//     private currentChar: Character, private chars: Array<Character>,
-//     private deck: string, private cards: Array<Card>, private pkg: string) {}
-// }
-
-// class Character {
-//   constructor(readonly name: string, private level: number) {}
-// }
-
-// class Card {
-//   constructor(readonly name: string, private amount: number) {}
-// }
 </script>
