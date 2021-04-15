@@ -30,7 +30,7 @@ import axios from "axios";
 import DuelLinksAccount from '@/types/duellinks/DuelLinkAccount'
 import Page from '@/types/Page'
 
-const baseUri = "http://localhost:24000/duelLinksAccounts";
+const baseUri = "http://localhost:22000/duelLinksAccounts";
 
 @Component({
   components: {}
