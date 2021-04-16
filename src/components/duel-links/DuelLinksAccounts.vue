@@ -8,16 +8,29 @@
                 :multi-sort="true"
                 :loading="loading"
   >
-    <template #item.index="{ item }">
-      {{ item.emulatorIndex ? item.emulatorIndex : item.appIndex }}
+    <template #item.index="{ item : account }">
+      {{ account.emulatorIndex ? account.emulatorIndex : account.appIndex }}
     </template>
 
-    <template #item.currentChar="{ item }">
-      {{ item.currentChar ? item.currentChar.name + ' ' + item.currentChar.level : '' }}
+    <template #item.cards="{ item : account }">
+      <v-combobox v-model="account.cards" multiple chips>
+        <template #selection="{ item : card, selected }">
+          <v-chip :input-value="selected" color="green" dark>
+            {{ card.name + '(' + card.amount + ')' }}
+          </v-chip>
+        </template>
+      </v-combobox>
+      <!-- <v-chip v-for="card in account.cards" :key="card.name" color="green lighten-1" dark>
+        {{ card.name + '(' + card.amount + ')' }}
+      </v-chip> -->
     </template>
 
-    <template #item.actions="{ item }">
-      <v-icon @click="editItem(item)">mdi-pencil</v-icon>
+    <template #item.currentChar="{ item : account}">
+      {{ account.currentChar ? account.currentChar.name + ' ' + account.currentChar.level : '' }}
+    </template>
+
+    <template #item.actions="{ item : account }">
+      <v-icon @click="editItem(account)">mdi-pencil</v-icon>
       <v-icon>mdi-delete</v-icon>
     </template>
   </v-data-table>
